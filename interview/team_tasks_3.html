@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Задачи команды · Голос внутреннего клиента</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a;
+  --ink-soft: #3a3a3a;
+  --ink-muted: #6b6b6b;
+  --ink-faint: #9a9a9a;
+  --paper: #faf8f4;
+  --paper-warm: #f4f1ea;
+  --rule: #d8d3c8;
+  --accent-1: #8b2c1e;
+  --accent-1-soft: #c4634f;
+  --accent-2: #2d5b4e;
+  --accent-2-soft: #5a8a7d;
+  --gold: #b8941f;
+  --highlight: #fef6dc;
+  --shadow-soft: rgba(26, 26, 26, 0.06);
+  --shadow-mid: rgba(26, 26, 26, 0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--ink);
+  background: var(--paper);
+  background-image:
+    radial-gradient(at 20% 0%, rgba(184, 148, 31, 0.04) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(139, 44, 30, 0.03) 0px, transparent 50%);
+  min-height: 100vh;
+}
+
+/* === TABS === */
+.tab-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  padding: 16px 40px;
+  display: flex;
+  gap: 4px;
+  backdrop-filter: blur(8px);
+  background: rgba(250, 248, 244, 0.92);
+}
+
+.tab {
+  padding: 10px 22px;
+  font-family: 'IBM Plex Sans';
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--ink-muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tab:hover { border-color: var(--ink); color: var(--ink); }
+.tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.tab[data-tab="task1"].active { background: var(--accent-1); border-color: var(--accent-1); }
+.tab[data-tab="task2"].active { background: var(--accent-2); border-color: var(--accent-2); }
+.tab[data-tab="shared"].active { background: var(--gold); border-color: var(--gold); }
+
+.tab-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  opacity: 0.7;
+  padding: 2px 6px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 3px;
+}
+
+.tab.active .tab-num { background: rgba(255,255,255,0.2); }
+
+/* === PAGES === */
+.page {
+  display: none;
+  padding: 60px 80px 120px;
+  max-width: 920px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease;
+}
+
+.page.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === HEADER === */
+.task-header {
+  margin-bottom: 56px;
+  padding-bottom: 32px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.task-eyebrow {
+  font-family: 'IBM Plex Sans';
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.page[data-page="task1"] .task-eyebrow { color: var(--accent-1); }
+.page[data-page="task2"] .task-eyebrow { color: var(--accent-2); }
+.page[data-page="shared"] .task-eyebrow { color: var(--gold); }
+
+.task-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: 56px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.task-title em { font-style: italic; font-weight: 300; }
+
+.page[data-page="task1"] .task-title em { color: var(--accent-1); }
+.page[data-page="task2"] .task-title em { color: var(--accent-2); }
+.page[data-page="shared"] .task-title em { color: var(--gold); }
+
+.task-subtitle {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 21px;
+  line-height: 1.45;
+  color: var(--ink-muted);
+  margin-bottom: 28px;
+  max-width: 640px;
+}
+
+.task-meta {
+  display: flex;
+  gap: 28px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  flex-wrap: wrap;
+}
+
+.task-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.task-meta-label { color: var(--ink-faint); font-size: 10px; }
+.task-meta-value { color: var(--ink); font-weight: 500; }
+
+/* === SECTIONS === */
+.section { margin-bottom: 56px; }
+
+.section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.page[data-page="task1"] .section-num { color: var(--accent-1); }
+.page[data-page="task2"] .section-num { color: var(--accent-2); }
+.page[data-page="shared"] .section-num { color: var(--gold); }
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+
+.h3 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 1.3;
+  color: var(--ink);
+  margin-top: 36px;
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+}
+
+.h4 {
+  font-family: 'IBM Plex Sans';
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  margin-top: 24px;
+  margin-bottom: 10px;
+}
+
+p {
+  margin-bottom: 16px;
+  color: var(--ink-soft);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+p strong { color: var(--ink); font-weight: 600; }
+p em { color: var(--ink-muted); }
+
+.lead {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin-bottom: 24px;
+}
+
+ul, ol {
+  margin: 16px 0 24px;
+  padding-left: 24px;
+  color: var(--ink-soft);
+}
+
+li { margin-bottom: 8px; line-height: 1.7; }
+
+.page[data-page="task1"] ul li::marker { color: var(--accent-1); }
+.page[data-page="task1"] ol li::marker { color: var(--accent-1); }
+.page[data-page="task2"] ul li::marker { color: var(--accent-2); }
+.page[data-page="task2"] ol li::marker { color: var(--accent-2); }
+.page[data-page="shared"] ul li::marker { color: var(--gold); }
+.page[data-page="shared"] ol li::marker { color: var(--gold); }
+
+ol li::marker { font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; }
+
+/* === KEY FRAME === */
+.key-frame {
+  margin: 24px 0;
+  padding: 28px 32px;
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  position: relative;
+  box-shadow: 0 2px 8px var(--shadow-soft);
+}
+
+.key-frame::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 6px 0 0 6px;
+}
+
+.page[data-page="task1"] .key-frame::before { background: var(--accent-1); }
+.page[data-page="task2"] .key-frame::before { background: var(--accent-2); }
+.page[data-page="shared"] .key-frame::before { background: var(--gold); }
+
+.key-frame-label {
+  font-family: 'IBM Plex Sans';
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 10px;
+}
+
+.key-frame-text {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.key-frame-text em { font-style: italic; }
+
+.page[data-page="task1"] .key-frame-text em { color: var(--accent-1); }
+.page[data-page="task2"] .key-frame-text em { color: var(--accent-2); }
+.page[data-page="shared"] .key-frame-text em { color: var(--gold); }
+
+/* === GOAL BOX === */
+.goal-box {
+  margin: 28px 0;
+  padding: 28px 32px;
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  position: relative;
+  box-shadow: 0 2px 8px var(--shadow-soft);
+}
+
+.goal-box-title {
+  font-family: 'Fraunces', serif;
+  font-size: 21px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+.goal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.goal-list li {
+  padding: 10px 0 10px 32px;
+  border-bottom: 1px dashed var(--rule);
+  position: relative;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.goal-list li:last-child { border-bottom: none; }
+
+.goal-list li::before {
+  content: '◆';
+  position: absolute;
+  left: 4px;
+  top: 12px;
+  font-size: 10px;
+  color: var(--gold);
+}
+
+.goal-list strong {
+  color: var(--ink);
+  font-weight: 600;
+  font-family: 'IBM Plex Sans';
+}
+
+/* === CALLOUT === */
+.callout {
+  margin: 24px 0;
+  padding: 18px 22px;
+  background: var(--highlight);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 4px 4px 0;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.callout strong { font-style: normal; color: var(--ink); }
+
+.note {
+  margin: 24px 0;
+  padding: 16px 20px;
+  background: var(--paper-warm);
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  display: flex;
+  gap: 12px;
+}
+
+.note-icon {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--ink-faint);
+  flex-shrink: 0;
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+/* === CARDS === */
+.cards {
+  display: grid;
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.cards-2 { grid-template-columns: 1fr 1fr; }
+.cards-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.card {
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 22px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--ink);
+  box-shadow: 0 4px 12px var(--shadow-soft);
+}
+
+.card-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: var(--ink-faint);
+}
+
+.card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.card-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+/* === CHECKLIST === */
+.checklist {
+  margin: 24px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checklist li {
+  padding: 12px 0 12px 36px;
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+  line-height: 1.55;
+}
+
+.checklist li:last-child { border-bottom: none; }
+
+.checklist li::before {
+  content: '○';
+  position: absolute;
+  left: 4px;
+  top: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+}
+
+.page[data-page="task1"] .checklist li::before { color: var(--accent-1); }
+.page[data-page="task2"] .checklist li::before { color: var(--accent-2); }
+.page[data-page="shared"] .checklist li::before { color: var(--gold); }
+
+/* === STAGES === */
+.stages { margin: 28px 0; }
+
+.stage {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+
+.stage:last-child { border-bottom: none; }
+
+.stage-num {
+  font-family: 'Fraunces', serif;
+  font-size: 38px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.page[data-page="task1"] .stage-num { color: var(--accent-1); }
+.page[data-page="task2"] .stage-num { color: var(--accent-2); }
+
+.stage-content { padding-top: 2px; }
+
+.stage-title {
+  font-family: 'Fraunces', serif;
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.stage-desc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink-muted);
+}
+
+.stage-desc strong { color: var(--ink-soft); }
+
+/* === TABLE === */
+.table-wrap {
+  margin: 24px 0;
+  overflow-x: auto;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: white;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+thead { background: var(--paper-warm); }
+
+th {
+  text-align: left;
+  padding: 12px 16px;
+  font-family: 'IBM Plex Sans';
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-soft);
+  vertical-align: top;
+  line-height: 1.55;
+}
+
+tr:last-child td { border-bottom: none; }
+
+/* === DELIVERABLES === */
+.deliv {
+  margin: 24px 0;
+  display: grid;
+  gap: 12px;
+}
+
+.deliv-item {
+  padding: 14px 20px;
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.deliv-when {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.05em;
+}
+
+.deliv-what {
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.deliv-what strong {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+/* === ZONES === */
+.zones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.zone {
+  padding: 20px 24px;
+  border-radius: 4px;
+  border: 1px solid var(--rule);
+}
+
+.zone-yours { background: rgba(255, 255, 255, 0.6); }
+
+.page[data-page="task1"] .zone-yours { border-color: var(--accent-1-soft); }
+.page[data-page="task2"] .zone-yours { border-color: var(--accent-2-soft); }
+
+.zone-mine { background: var(--paper-warm); }
+
+.zone-label {
+  font-family: 'IBM Plex Sans';
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 12px;
+}
+
+.zone-list { list-style: none; padding: 0; margin: 0; }
+
+.zone-list li {
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.zone-list li::before {
+  content: '→';
+  margin-right: 8px;
+  color: var(--ink-faint);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* === ATOM EXPLAINER === */
+.atom-box {
+  margin: 28px 0;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(184, 148, 31, 0.08), rgba(184, 148, 31, 0.02));
+  border: 1px solid rgba(184, 148, 31, 0.3);
+  border-radius: 6px;
+}
+
+.atom-label {
+  font-family: 'IBM Plex Sans';
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.atom-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  color: var(--ink);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.atom-desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+
+.atom-axes {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.atom-axis {
+  padding: 14px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid rgba(184, 148, 31, 0.2);
+}
+
+.atom-axis-title {
+  font-family: 'IBM Plex Sans';
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.atom-axis-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+/* === JTBD BOX === */
+.jtbd-box {
+  margin: 24px 0;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(45, 91, 78, 0.06), rgba(45, 91, 78, 0.01));
+  border: 1px solid rgba(45, 91, 78, 0.25);
+  border-radius: 6px;
+}
+
+.jtbd-label {
+  font-family: 'IBM Plex Sans';
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: 10px;
+}
+
+.jtbd-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  color: var(--ink);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.jtbd-desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.jtbd-desc strong { color: var(--ink); }
+
+/* === RESPONSIVE === */
+@media (max-width: 800px) {
+  .page { padding: 40px 24px 80px; }
+  .task-title { font-size: 38px; }
+  .task-subtitle { font-size: 17px; }
+  .section-title { font-size: 24px; }
+  .tab-bar { padding: 12px 20px; flex-wrap: wrap; }
+  .tab { padding: 8px 14px; font-size: 12px; }
+  .cards-2, .cards-3, .zones, .atom-axes { grid-template-columns: 1fr; }
+  .stage { grid-template-columns: 48px 1fr; gap: 16px; }
+  .stage-num { font-size: 30px; }
+  .deliv-item { grid-template-columns: 1fr; gap: 6px; }
+}
+
+@media print {
+  .tab-bar { display: none; }
+  .page { display: block !important; page-break-after: always; }
+}
+
+footer {
+  margin-top: 80px;
+  padding-top: 32px;
+  border-top: 1px solid var(--rule);
+  font-size: 13px;
+  color: var(--ink-muted);
+  line-height: 1.6;
+}
+
+footer .quote {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink-soft);
+  margin-bottom: 20px;
+}
+
+footer .signature {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+}
+</style>
+</head>
+<body>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab active" data-tab="overview" onclick="showTab('overview')">
+    <span class="tab-num">00</span> Общее
+  </button>
+  <button class="tab" data-tab="task1" onclick="showTab('task1')">
+    <span class="tab-num">01</span> Марина · Голос клиента
+  </button>
+  <button class="tab" data-tab="task2" onclick="showTab('task2')">
+    <span class="tab-num">02</span> Марина · Инфраструктура
+  </button>
+  <button class="tab" data-tab="shared" onclick="showTab('shared')">
+    <span class="tab-num">03</span> Вместе
+  </button>
+</div>
+
+<!-- ============ OVERVIEW ============ -->
+<div class="page active" data-page="overview" id="page-overview">
+  <header class="task-header">
+    <div class="task-eyebrow" style="color: var(--ink-muted);">Проект · Команда логистики</div>
+    <h1 class="task-title">Голос <em style="color: var(--ink-soft);">внутреннего</em><br>клиента</h1>
+    <div class="task-subtitle">Услышать тех, для кого мы работаем — и сделать из услышанного работающие изменения.</div>
+    <div class="task-meta">
+      <div class="task-meta-item">
+        <span class="task-meta-label">Команда</span>
+        <span class="task-meta-value">Марина · руководитель</span>
+      </div>
+      <div class="task-meta-item">
+        <span class="task-meta-label">Охват</span>
+        <span class="task-meta-value">~50 интервью (80% компании)</span>
+      </div>
+      <div class="task-meta-item">
+        <span class="task-meta-label">Главный артефакт</span>
+        <span class="task-meta-value">Система обратной связи + Атомы улучшений</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-num" style="color: var(--ink-muted);">00.1 · Зачем</div>
+    <h2 class="section-title">Цели проекта</h2>
+
+    <p class="lead">У этого проекта несколько целей одновременно — и они все важны. Мы не делаем «опрос». Мы делаем сразу несколько вещей через один проект.</p>
+
+    <div class="goal-box">
+      <div class="goal-box-title">Что мы хотим получить</div>
+      <ul class="goal-list">
+        <li><strong>Рост лидерских навыков</strong> — у каждой из вас. Этот проект — место, где вы пробуете быть лидерами своих потоков, принимать решения, защищать их.</li>
+        <li><strong>Сбор реальных проблем в компании</strong> — конкретных, не на уровне догадок. С цитатами, с частотой, с привязкой к ролям.</li>
+        <li><strong>Отработка текущих навыков на живом проекте</strong> — то, что вы учите по курсам и в работе, применяется здесь к настоящему делу с настоящими последствиями.</li>
+        <li><strong>Создание системы обратной связи</strong> — не разовый опрос, а механизм, который дальше работает в компании.</li>
+        <li><strong>Список инсайтов для улучшения логистики</strong> — главный операционный результат для команды логистики.</li>
+      </ul>
+    </div>
+
+    <p>Эти цели равноценны. Если мы получим только инсайты по логистике, но не вырастем как команда — это половина результата. Если вырастем, но не получим инсайтов — тоже половина. Хорошо, когда оба.</p>
+  </section>
+
+  <section class="section">
+    <div class="section-num" style="color: var(--ink-muted);">00.2 · Как устроено</div>
+    <h2 class="section-title">Два потока, одна команда</h2>
+
+    <p>Проект разделён на два потока. У каждого свой лидер с собственной зоной ответственности и решений.</p>
+
+    <div class="cards cards-2">
+      <div class="card">
+        <div class="card-tag" style="color: var(--accent-1);">Поток 01 · Марина</div>
+        <div class="card-title">Голос клиента</div>
+        <div class="card-body">Разговор с людьми: интервью с теми, для кого мы работаем. Фиксация ключевых моментов и инсайтов из услышанного. Презентация результатов.</div>
+      </div>
+      <div class="card">
+        <div class="card-tag" style="color: var(--accent-2);">Поток 02 · Марина</div>
+        <div class="card-title">Инфраструктура</div>
+        <div class="card-body">Технические инструменты: запись и автоматическая транскрибация интервью, хранение, поиск, AI-обработка данных. Система, которой потом смогут пользоваться и другие команды.</div>
+      </div>
+    </div>
+
+    <p>Каждая из вас — <strong>лидер своего потока</strong>. Не помощник, не исполнитель. Лидер. В зоне вашего потока решения принимаете вы. Я как руководитель проекта поддерживаю, тренирую, защищаю от внешних препятствий — но не подменяю ваши решения своими.</p>
+
+    <div class="callout">
+      <strong>Это пилот, не финал.</strong> Первый цикл будет с ошибками — это нормально. Мы учимся на нём. Не ждите от себя совершенства, ждите движения.
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num" style="color: var(--ink-muted);">00.3 · Главное понятие</div>
+    <h2 class="section-title">Что такое Атом</h2>
+
+    <div class="atom-box">
+      <div class="atom-label">Атом</div>
+      <div class="atom-title">Смысловая единица обратной связи</div>
+      <div class="atom-desc">
+        Атом — это <strong>одно конкретное наблюдение или улучшение</strong>, которое можно сформулировать в одно предложение и с которым можно что-то сделать. Например: «менеджеры B2B узнают о задержке доставки от клиента, а не от логистики» — это один Атом.
+      </div>
+      <div class="atom-desc">
+        Главное свойство Атомов — их можно <strong>группировать по разным осям</strong>. Это превращает разрозненные жалобы и идеи в системную картину.
+      </div>
+      <div class="atom-axes">
+        <div class="atom-axis">
+          <div class="atom-axis-title">По людям</div>
+          <div class="atom-axis-desc">Что говорят конкретные роли — менеджеры онлайн, B2B, дизайн</div>
+        </div>
+        <div class="atom-axis">
+          <div class="atom-axis-title">По командам</div>
+          <div class="atom-axis-desc">Картина по подразделениям — продажи, производство, логистика</div>
+        </div>
+        <div class="atom-axis">
+          <div class="atom-axis-title">По джобам</div>
+          <div class="atom-axis-desc">По задачам, которые клиент решает с нашей помощью (JTBD)</div>
+        </div>
+      </div>
+    </div>
+
+    <p>На дальнейших страницах задач — детали для каждой. Третья вкладка — где мы пересекаемся и как работаем вместе.</p>
+  </section>
+
+  <section class="section">
+    <div class="section-num" style="color: var(--ink-muted);">00.4 · Главное совместное действие</div>
+    <h2 class="section-title">Совместный брейншторм и закрытие петли</h2>
+
+    <p>Между сбором данных и презентацией Совету есть <strong>самая важная содержательная стадия</strong> — мы втроём собираем документ улучшений. На базе Атомов, джобов и сгруппированных данных отвечаем на три вопроса для каждого направления:</p>
+
+    <div class="cards cards-3">
+      <div class="card">
+        <div class="card-tag">Вопрос 1</div>
+        <div class="card-title">Что можем улучшить</div>
+        <div class="card-body">Конкретные улучшения, по которым у нас есть силы и ясность, что делать.</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Вопрос 2</div>
+        <div class="card-title">Какими силами</div>
+        <div class="card-body">Кто, что и в какой срок — реалистичный план, не пожелания.</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Вопрос 3</div>
+        <div class="card-title">Что пока не можем</div>
+        <div class="card-body">Честно — что услышали, но не возьмём сейчас. И почему.</div>
+      </div>
+    </div>
+
+    <p>Этот документ — главный артефакт проекта на пути от данных к действиям. И <strong>после него</strong> мы готовим персональный отклик для каждого из ~50 опрошенных: что услышали именно от него, что меняем, что не сейчас. Тексты пишем вместе, но <strong>рупором выступает Марина</strong> — именно она начинала разговор и именно она возвращается с ответом. Для каждого человека это <strong>один цельный диалог</strong> с одним и тем же собеседником, не безличная рассылка от команды. Без этой стадии все 10-минутные разговоры теряют смысл — поэтому она такая же важная, как сами интервью.</p>
+  </section>
+
+  <section class="section">
+    <div class="section-num" style="color: var(--ink-muted);">00.5 · Горизонт</div>
+    <h2 class="section-title">Что после первой волны</h2>
+
+    <p>Этот проект — <strong>не одноразовая акция</strong>. После первой волны интервью (~50 разговоров) у нас должен остаться <strong>работающий инструмент</strong> — не только для логистики, но и для других команд компании. Любая команда сможет взять эту систему и провести свою волну опросов своих внутренних клиентов.</p>
+
+    <p>Это значит, что Марина строит и инфраструктуру с прицелом на масштабирование, и методологию, которую можно объяснить и передать. Не «делаем для себя», а «делаем образец».</p>
+  </section>
+</div>
+
+<!-- ============ TASK 1 — МАРИНА ============ -->
+<div class="page" data-page="task1" id="page-task1">
+  <header class="task-header">
+    <div class="task-eyebrow">Поток 01 · Марина</div>
+    <h1 class="task-title">Услышать тех, для кого мы <em>работаем</em></h1>
+    <div class="task-subtitle">Провести разговоры с внутренними клиентами компании, выделить ключевые моменты, превратить услышанное в Атомы — конкретные формулировки, с которыми можно что-то сделать.</div>
+    <div class="task-meta">
+      <div class="task-meta-item">
+        <span class="task-meta-label">Объём первой волны</span>
+        <span class="task-meta-value">~50 интервью (≈80% компании)</span>
+      </div>
+      <div class="task-meta-item">
+        <span class="task-meta-label">Длительность интервью</span>
+        <span class="task-meta-value">10 минут</span>
+      </div>
+      <div class="task-meta-item">
+        <span class="task-meta-label">Главные артефакты</span>
+        <span class="task-meta-value">Атомы + презентация Совету</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-num">01.1 · Зона ответственности</div>
+    <h2 class="section-title">Что значит — быть лидером этого потока</h2>
+
+    <div class="key-frame">
+      <div class="key-frame-label">Главная мысль</div>
+      <div class="key-frame-text">Твоя задача — <em>задать вопросы и услышать ответы</em>. Качество твоих вопросов и твоего внимания — твоя ответственность. Качество ответов — нет.</div>
+    </div>
+
+    <p>Если респондент отвечает односложно — это его выбор. Если кто-то откажется от интервью — это его выбор. Если данные оказываются скудными — это сигнал нам, не вина тебе.</p>
+
+    <p>Важно: <strong>транскрибацией интервью занимается Марина</strong>. Запись делается через систему, она же расшифровывает аудио в текст автоматически. Ты не должна дословно стенографировать — это будет делаться без тебя. Твоё дело — <strong>фиксировать ключевые моменты и инсайты</strong>: что зацепило, что важно, конкретные цитаты, которые отражают суть. Это и есть твоя главная аналитическая работа.</p>
+
+    <h3 class="h3">Что ты решаешь сама</h3>
+    <div class="zones">
+      <div class="zone zone-yours">
+        <div class="zone-label">Твои решения</div>
+        <ul class="zone-list">
+          <li>В каком порядке опрашивать людей</li>
+          <li>Когда отойти от скрипта по контексту разговора</li>
+          <li>Как сформулировать инсайт из услышанного</li>
+          <li>Какие моменты считать ключевыми</li>
+          <li>Какие цитаты выписывать</li>
+          <li>Формат твоих заметок</li>
+          <li>Как ты лично готовишься перед интервью</li>
+        </ul>
+      </div>
+      <div class="zone zone-mine">
+        <div class="zone-label">Со мной согласуем</div>
+        <ul class="zone-list">
+          <li>Список респондентов (стартовый)</li>
+          <li>Изменения в скрипте (если нужны)</li>
+          <li>Содержание презентации (совместно с Мариной)</li>
+          <li>Сложные случаи: отказ, эмоциональная реакция</li>
+          <li>Готовность к презентации Совету</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num">01.2 · Методология</div>
+    <h2 class="section-title">JTBD и принципы интервью</h2>
+
+    <div class="jtbd-box">
+      <div class="jtbd-label">Jobs To Be Done</div>
+      <div class="jtbd-title">Какую работу клиент «нанимает» нас делать</div>
+      <div class="jtbd-desc">
+        JTBD — это способ смотреть на работу через глаза клиента. Главная идея: <strong>клиент не «покупает продукт», он нанимает его сделать конкретную работу в своей жизни</strong>. Менеджер B2B не «нанимает доставку» как услугу — он нанимает её, чтобы <strong>сдержать обещание перед своим клиентом</strong>. Это разные вещи. Первая — про коробки и грузовики, вторая — про спокойствие, репутацию, отношения.
+      </div>
+      <div class="jtbd-desc" style="margin-top: 12px;">
+        В интервью мы спрашиваем не «как вам наша доставка», а вытаскиваем <strong>ситуацию найма</strong>: когда стало понятно, что нужна логистика; что ты сделал тогда; что было бы идеальным результатом. Это даёт глубже, чем обычная обратная связь — мы видим не только «что плохо», но и «зачем им вообще наша работа».
+      </div>
+    </div>
+
+    <h3 class="h3">Принципы, на которых строится интервью</h3>
+    <div class="cards cards-3">
+      <div class="card">
+        <div class="card-tag">Принцип 1</div>
+        <div class="card-title">Молчание — нормально</div>
+        <div class="card-body">После вопроса жди 5–7 секунд. Самые честные ответы приходят после паузы. Не заполняй её своими словами.</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Принцип 2</div>
+        <div class="card-title">Не защищай логистику</div>
+        <div class="card-body">Если критикуют — «понятно, записала, ещё что-то?». Ты собираешь данные, не оправдываешь команду.</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Принцип 3</div>
+        <div class="card-title">Конкретика, не обобщения</div>
+        <div class="card-body">Если ответ «вообще-то нормально» — один уточняющий вопрос: «А последний случай когда был?». Дальше — записать и идти дальше.</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Якорь перед каждым интервью.</strong> Проговори про себя: «Моя задача — задать вопросы и услышать ответы. Всё.» Это возвращает в роль и снимает лишнюю ответственность.
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num">01.3 · Что делаем по этапам</div>
+    <h2 class="section-title">Шесть стадий потока</h2>
+
+    <div class="stages">
+      <div class="stage">
+        <div class="stage-num">1</div>
+        <div class="stage-content">
+          <div class="stage-title">Подготовка</div>
+          <div class="stage-desc">
+            Знакомство со скриптом интервью и принципами JTBD. Тренировочное интервью со мной или с Мариной — для отработки. Финализация списка респондентов. Согласование расписания первых интервью. <strong>В конце стадии:</strong> ты готова провести первое реальное интервью.
+          </div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">2</div>
+        <div class="stage-content">
+          <div class="stage-title">Сбор интервью</div>
+          <div class="stage-desc">
+            Первые 2 интервью — я присутствую как наблюдатель (молчу, слушаю, после — разбор). С 3-го — ты одна. Между интервью — 15–20 минут на фиксацию ключевых моментов и инсайтов. <strong>В конце стадии:</strong> все ~50 интервью проведены, в системе лежат аудиозаписи (с автотранскрипцией от Марины) и твои заметки с инсайтами.
+          </div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">3</div>
+        <div class="stage-content">
+          <div class="stage-title">Формулировка Атомов</div>
+          <div class="stage-desc">
+            Просматриваешь свои заметки и транскрипты. Сводишь похожее: если несколько человек сказали о том же — это один Атом с большей частотой. Группируешь Атомы по осям (люди, команды, джобы). <strong>Эту работу мы делаем совместно — ты, Марина и я.</strong> Марина к этому моменту автоматизирует черновую разметку Атомов прямо во время записи интервью, твоя задача — проверять, уточнять, формулировать. <strong>В конце стадии:</strong> сформулированный список Атомов, сгруппированный по осям.
+          </div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">4</div>
+        <div class="stage-content">
+          <div class="stage-title">Документ улучшений — совместный брейншторм</div>
+          <div class="stage-desc">
+            На основе Атомов, джобов и групп — втроём (ты, Марина, я) собираем документ улучшений. Для каждого направления отвечаем на три вопроса: <strong>(1) что можем улучшить, (2) какими силами и в какой срок, (3) что пока не можем — и почему</strong>. Это не просто список Атомов, а уже <strong>план действий с приоритизацией</strong>. Часть улучшений мы возьмём сами в логистике, часть потребует других команд, часть честно отметим как «не сейчас». <strong>В конце стадии:</strong> готов финальный документ улучшений, который понесём дальше.
+          </div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">5</div>
+        <div class="stage-content">
+          <div class="stage-title">Подготовка и презентация Совету</div>
+          <div class="stage-desc">
+            Содержание и нарратив презентации вы с Мариной готовите совместно — опираясь на документ улучшений из стадии 4. Технически презентацию ведёт Марина (показ системы, демонстрация). Содержательную часть про Атомы, джобы и план улучшений — делаешь ты. Несколько прогонов, чтобы вы обе чувствовали себя уверенно. <strong>В конце стадии:</strong> презентация прошла.
+          </div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">6</div>
+        <div class="stage-content">
+          <div class="stage-title">Обратная связь каждому опрошенному</div>
+          <div class="stage-desc">
+            Это финальная стадия проекта. <strong>Каждому из ~50 опрошенных</strong> мы возвращаемся с персональным сообщением: что мы услышали именно от тебя, что вошло в документ улучшений, что мы берём в работу, что пока не можем. <strong>Текст для каждого готовится втроём</strong> — ты, Марина и я; на каждого респондента смотрим отдельно, опираясь на его конкретные слова и инсайты. <strong>Но рупором выступаешь ты</strong> — именно ты начинала разговор и именно ты возвращаешься с ответом. Для опрошенного человека это один цельный диалог с тобой, не безличная рассылка от команды. <strong>В конце стадии:</strong> петля обратной связи замкнута — каждый, кто потратил на нас 10 минут, получил персональный отклик от того же человека, который его слушал.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num">01.4 · Что получится в итоге</div>
+    <h2 class="section-title">Артефакты потока</h2>
+
+    <div class="deliv">
+      <div class="deliv-item">
+        <div class="deliv-when">После стадии 2</div>
+        <div class="deliv-what"><strong>Заметки и инсайты</strong> — по каждому из ~50 интервью, с ключевыми цитатами</div>
+      </div>
+      <div class="deliv-item">
+        <div class="deliv-when">После стадии 3</div>
+        <div class="deliv-what"><strong>Список Атомов</strong> — сгруппированных по людям, командам, джобам</div>
+      </div>
+      <div class="deliv-item">
+        <div class="deliv-when">После стадии 4</div>
+        <div class="deliv-what"><strong>Документ улучшений</strong> — что меняем, какими силами, что пока не можем</div>
+      </div>
+      <div class="deliv-item">
+        <div class="deliv-when">После стадии 5</div>
+        <div class="deliv-what"><strong>Презентация Совету</strong> — содержательная часть в твоей зоне</div>
+      </div>
+      <div class="deliv-item">
+        <div class="deliv-when">После стадии 6</div>
+        <div class="deliv-what"><strong>Персональные ответы 50 опрошенным</strong> — петля обратной связи замкнута</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num">01.5 · Что для тебя в этом</div>
+    <h2 class="section-title">Что ты получишь из проекта</h2>
+
+    <p>Я хочу проговорить это явно.</p>
+
+    <ul>
+      <li><strong>Навык исследовательского интервью.</strong> Это редкий и востребованный навык — он применим везде: в продукте, в HR, в продажах. Через 50 интервью ты будешь делать это сильно лучше, чем большинство людей в индустрии.</li>
+      <li><strong>Опыт публичной презентации.</strong> Презентация Совету — серьёзный выход. Один такой выход обычно равен полугоду внутреннего роста.</li>
+      <li><strong>Понимание того, как устроена компания.</strong> После разговора с 80% компании ты будешь видеть её шире, чем кто-либо, кроме основателя.</li>
+      <li><strong>Связи в компании.</strong> Каждый, с кем ты поговоришь, будет помнить о тебе как о человеке, который услышал.</li>
+      <li><strong>Опыт работы в JTBD-методологии.</strong> Это базовый продуктовый навык, который ценится на рынке.</li>
+      <li><strong>Уверенность.</strong> Не та, что от того, что всё прошло гладко. А та, что от того, что ты прошла через сложное и справилась.</li>
+    </ul>
+
+    <p>Бонус за завершение проекта — отдельным разговором.</p>
+  </section>
+</div>
+
+<!-- ============ TASK 2 — МАРИНА ============ -->
+<div class="page" data-page="task2" id="page-task2">
+  <header class="task-header">
+    <div class="task-eyebrow">Поток 02 · Марина</div>
+    <h1 class="task-title">Построить систему, которая <em>переживёт</em> первую волну</h1>
+    <div class="task-subtitle">Создать технические инструменты для сбора и обработки интервью — с автоматической транскрибацией и AI-анализом. Сделать так, чтобы после первой волны это стало рабочим инструментом не только для нашей команды, но и для других команд компании.</div>
+    <div class="task-meta">
+      <div class="task-meta-item">
+        <span class="task-meta-label">Стек</span>
+        <span class="task-meta-value">На твоё проектирование</span>
+      </div>
+      <div class="task-meta-item">
+        <span class="task-meta-label">Объём обработки</span>
+        <span class="task-meta-value">~50 интервью в первой волне</span>
+      </div>
+      <div class="task-meta-item">
+        <span class="task-meta-label">Горизонт</span>
+        <span class="task-meta-value">Инструмент для всей компании</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-num">02.1 · Зона ответственности</div>
+    <h2 class="section-title">Что значит — быть лидером этого потока</h2>
+
+    <div class="key-frame">
+      <div class="key-frame-label">Главная мысль</div>
+      <div class="key-frame-text">Твоя задача — <em>сделать так, чтобы данные собирались, не терялись и легко превращались в инсайты</em>. Технология — инструмент, не самоцель.</div>
+    </div>
+
+    <p>Соблазн в этом потоке — построить «красивую систему». С продуманной архитектурой, со множеством фич. Это нормальный инженерный соблазн, но в нашем проекте он работает против. Лучшая система — <strong>самая простая, которая делает то, что нужно, и не больше</strong>.</p>
+
+    <p>Критерий успеха не «как круто сделано», а «удобно ли пользоваться мне, и можно ли передать систему другой команде». Если я каждый раз благодарю за то, как легко записать данные — ты сделала хорошо. Если ругаюсь — ты сделала технически, но не для человека.</p>
+
+    <h3 class="h3">Что ты решаешь сама</h3>
+    <div class="zones">
+      <div class="zone zone-yours">
+        <div class="zone-label">Твои решения</div>
+        <ul class="zone-list">
+          <li>Выбор технологического стека</li>
+          <li>Архитектура хранения данных</li>
+          <li>Дизайн интерфейса для Дины</li>
+          <li>Сервис автоматической транскрибации</li>
+          <li>Способ подключения AI к транскриптам</li>
+          <li>Как обрабатывать ошибки и сбои</li>
+          <li>Что делать в первую очередь, что во вторую</li>
+          <li>Когда переделывать, когда оставить как есть</li>
+        </ul>
+      </div>
+      <div class="zone zone-mine">
+        <div class="zone-label">Со мной согласуем</div>
+        <ul class="zone-list">
+          <li>Бюджет на инструменты</li>
+          <li>Где хранятся данные (вопрос приватности)</li>
+          <li>Доступы — кто видит что</li>
+          <li>Подключение к существующим системам компании</li>
+          <li>Решение «переделать всё» — если такое появится</li>
+          <li>Готовность к передаче системы другим командам</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num">02.2 · Что должно работать</div>
+    <h2 class="section-title">Функциональные требования</h2>
+
+    <p>Я описываю, <strong>что система должна делать</strong>, не <strong>как</strong>. «Как» — твоё решение.</p>
+
+    <h3 class="h3">Минимум, который должен работать</h3>
+    <ul class="checklist">
+      <li>Марина может быстро запустить запись интервью и закинуть её в систему</li>
+      <li>Аудиозапись автоматически транскрибируется в текст</li>
+      <li>Транскрипт сохраняется рядом с метаданными: дата, роль респондента, канал</li>
+      <li>Марина может удобно фиксировать ключевые моменты и инсайты (не весь текст, а выжимки)</li>
+      <li>Данные сохраняются надёжно — ничего не теряется, есть резервные копии</li>
+      <li>Можно найти интервью по фильтрам: по роли респондента, по дате, по теме</li>
+      <li>Транскрипты + заметки Марины автоматически превращаются в черновики Атомов</li>
+      <li>Атомы можно группировать по разным осям: по людям, по командам, по джобам</li>
+      <li>Я как руководитель могу видеть общую картину — сколько интервью, какие категории Атомов превалируют</li>
+    </ul>
+
+    <h3 class="h3">Что должно быть готово для следующих команд</h3>
+    <ul class="checklist">
+      <li>Если другая команда захочет провести свою волну опросов — система должна работать с другой командой без переделок</li>
+      <li>Категории Атомов настраиваются (у логистики свои, у дизайна могут быть другие)</li>
+      <li>Краткая документация: как запустить новую волну</li>
+    </ul>
+
+    <h3 class="h3">Что не нужно делать в первой версии</h3>
+    <ul class="checklist">
+      <li>Полноценный UI с регистрацией пользователей</li>
+      <li>Интеграция с другими системами компании</li>
+      <li>Мобильное приложение</li>
+      <li>Красивый дизайн с анимациями</li>
+      <li>Сложная аналитика и дашборды</li>
+    </ul>
+
+    <div class="note">
+      <span class="note-icon">→</span>
+      <div>Если что-то из «не нужно» очень хочется — обсудим. Возможно, оправдано. Но по умолчанию: каждая дополнительная фича стоит времени и усложняет передачу системы другой команде.</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num">02.3 · Что делаем по этапам</div>
+    <h2 class="section-title">Пять стадий потока</h2>
+
+    <div class="stages">
+      <div class="stage">
+        <div class="stage-num">1</div>
+        <div class="stage-content">
+          <div class="stage-title">Исследование и выбор стека</div>
+          <div class="stage-desc">
+            Смотришь на варианты решений и сравниваешь их: что быстрее построить, что надёжнее, что дешевле, что легче передать другой команде. Сравниваешь готовые no-code инструменты, кастомные решения, гибриды. Отдельно — выбор сервиса транскрибации. <strong>В конце стадии:</strong> ты приходишь ко мне с 2–3 вариантами и говоришь, какой выбираешь и почему. Я задаю вопросы, при разумности соглашаюсь.
+          </div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">2</div>
+        <div class="stage-content">
+          <div class="stage-title">Минимальный прототип</div>
+          <div class="stage-desc">
+            Собираешь самое простое, что работает. Базовое хранение, запись интервью, автоматическая транскрибация. Марина пробует ввести тестовое интервью. Что-то сразу неудобно — отмечает. <strong>В конце стадии:</strong> прототип работает на одном реальном интервью, известны первые проблемы UX.
+          </div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">3</div>
+        <div class="stage-content">
+          <div class="stage-title">Доработка UX и подключение AI</div>
+          <div class="stage-desc">
+            Исправляешь то, что неудобно. Подключаешь AI-обработку: транскрипт + заметки Марины → черновики Атомов с категориями. Реализуешь группировку Атомов по осям (люди, команды, джобы). Это самая интересная инженерная часть. <strong>Поиск и анализ Атомов делается совместно с Мариной</strong> — задача автоматизировать черновую разметку каждой транскрипции, её задача — проверять и уточнять формулировки. <strong>В конце стадии:</strong> первые 3–5 интервью прошли через всю систему до Атомов.
+          </div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">4</div>
+        <div class="stage-content">
+          <div class="stage-title">Поддержка во время основной волны</div>
+          <div class="stage-desc">
+            Марина в активной фазе сбора, ~50 интервью идут через систему. Ты на связи: что-то не работает — чинишь, что-то неудобно — улучшаешь. Самый ценный период для понимания, что в системе хорошо, что плохо. <strong>В конце:</strong> система выдержала реальную нагрузку.
+          </div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">5</div>
+        <div class="stage-content">
+          <div class="stage-title">Документация, презентация, подготовка к передаче</div>
+          <div class="stage-desc">
+            Описываешь, как система устроена, для передачи другим командам. Подготовка демонстрации системы для Совета. На презентации ты ведёшь технически — показываешь систему в действии. Содержание и нарратив — готовите с Диной совместно. <strong>В конце:</strong> система задокументирована, может быть передана.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num">02.4 · Принципы инженерных решений</div>
+    <h2 class="section-title">Что важно для качества</h2>
+
+    <div class="cards cards-3">
+      <div class="card">
+        <div class="card-tag">Принцип 1</div>
+        <div class="card-title">Простое лучше сложного</div>
+        <div class="card-body">Если выбор между двумя решениями — выбирай то, которое проще поддерживать и передавать. Системы, которые работают, обычно проще «правильных».</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Принцип 2</div>
+        <div class="card-title">Сначала работает, потом красиво</div>
+        <div class="card-body">Кривой работающий прототип за первую неделю лучше красивой системы через месяц. Полировка — потом, если есть смысл.</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Принцип 3</div>
+        <div class="card-title">Имеешь право ошибиться</div>
+        <div class="card-body">Если выбрала стек, поняла, что не подходит — нормально, переделывай. Опыт «выбрала, ошиблась, переделала» ценнее «выбрала правильно с первого раза».</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Связка с твоим курсом по ИИ и коду.</strong> Этот проект — место для прикладного применения учёбы. Скажи, что у тебя сейчас на курсе — мы посмотрим, как акценты задач лягут на текущий материал. Это твоё решение, какие инструменты и подходы выбирать; задачи проекта достаточно гибкие, чтобы под них можно было подстроить разные технологии.
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num">02.5 · Что получится в итоге</div>
+    <h2 class="section-title">Артефакты потока</h2>
+
+    <div class="deliv">
+      <div class="deliv-item">
+        <div class="deliv-when">После стадии 1</div>
+        <div class="deliv-what"><strong>Выбор стека</strong> — обоснованный, с альтернативами</div>
+      </div>
+      <div class="deliv-item">
+        <div class="deliv-when">После стадии 2</div>
+        <div class="deliv-what"><strong>Работающий прототип</strong> — запись, автотранскрипция, ввод заметок</div>
+      </div>
+      <div class="deliv-item">
+        <div class="deliv-when">После стадии 3</div>
+        <div class="deliv-what"><strong>AI-извлечение Атомов</strong> — автоматическая разметка в работе, группировка по осям</div>
+      </div>
+      <div class="deliv-item">
+        <div class="deliv-when">После стадии 4</div>
+        <div class="deliv-what"><strong>Стабильная система</strong> — выдержавшая ~50 интервью без потерь</div>
+      </div>
+      <div class="deliv-item">
+        <div class="deliv-when">После стадии 5</div>
+        <div class="deliv-what"><strong>Документация + готовность к передаче</strong> — другая команда сможет взять и использовать</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num">02.6 · Что для тебя в этом</div>
+    <h2 class="section-title">Что ты получишь из проекта</h2>
+
+    <p>Это лучший проект для прикладного применения того, что ты учишь на курсе.</p>
+
+    <ul>
+      <li><strong>Реальный кейс в портфолио.</strong> Это не учебный проект — рабочая система, которой пользуется коллега, от которой зависит результат. Сильнее любого диплома курса.</li>
+      <li><strong>Опыт принятия архитектурных решений.</strong> Выбор стека, проектирование схемы данных, оценка trade-off. Инженерная зрелость, которая приходит только через практику.</li>
+      <li><strong>Работа с AI-инструментами в боевом режиме.</strong> Применение AI в production-сценарии — это уже ценится на рынке выше, чем учебные эксперименты.</li>
+      <li><strong>Опыт работы с пользователем.</strong> Ты сама — пользователь системы. Это первый опыт ответственности за UX, которым потом будут пользоваться другие.</li>
+      <li><strong>Опыт ошибки и переделки.</strong> Возможно, самое ценное. Не пугайся, если в середине поймёшь, что выбрала не то. Это нормальная инженерная работа.</li>
+      <li><strong>Опыт подготовки системы к передаче.</strong> Этот навык — мост между «делать самой» и «строить продукт для других». Очень ценный.</li>
+    </ul>
+
+    <p>Бонус за завершение проекта — отдельным разговором.</p>
+  </section>
+</div>
+
+<!-- ============ SHARED ============ -->
+<div class="page" data-page="shared" id="page-shared">
+  <header class="task-header">
+    <div class="task-eyebrow">Поток 03 · Совместная работа</div>
+    <h1 class="task-title">Где мы <em>вместе</em></h1>
+    <div class="task-subtitle">Два потока работают параллельно, но в нескольких точках обязательно пересекаются. Здесь — где, как часто, зачем.</div>
+  </header>
+
+  <section class="section">
+    <div class="section-num">03.1 · Регулярные точки</div>
+    <h2 class="section-title">Встречи проекта</h2>
+
+    <div class="cards cards-3">
+      <div class="card">
+        <div class="card-tag">Раз в 1–2 недели</div>
+        <div class="card-title">Общая встреча команды</div>
+        <div class="card-body">30 минут. Каждая отчитывается за свой поток. Обсуждаются пересечения. Я задаю вопросы, но не веду. Решения о пересечениях — между вами.</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">В любое время</div>
+        <div class="card-title">1-на-1 с руководителем</div>
+        <div class="card-body">15–30 минут, если необходимо. У каждой отдельно, по запросу. Личные вызовы, обучение, обратная связь. Не по расписанию — когда есть потребность.</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">3 раза за проект</div>
+        <div class="card-title">Контрольные точки</div>
+        <div class="card-body">После первых интервью, перед формированием Атомов, после презентации Совету. Короткая встреча для сверки курса и принятия решений.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num">03.2 · Где вы зависите друг от друга</div>
+    <h2 class="section-title">Точки пересечения потоков</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Точка</th><th>Что нужно от интервьюера (Марина)</th><th>Что нужно от системы (Claude + инструменты)</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Дизайн системы</strong></td>
+            <td>Какие данные нужны, в каком формате, как часто</td>
+            <td>Удобный интерфейс, в который легко всё это записать</td>
+          </tr>
+          <tr>
+            <td><strong>Транскрибация</strong></td>
+            <td>Качество записей (микрофон, тишина)</td>
+            <td>Автоматическая расшифровка аудио в текст</td>
+          </tr>
+          <tr>
+            <td><strong>Категории и оси Атомов</strong></td>
+            <td>Список категорий и осей, который имеет смысл по сути</td>
+            <td>Реализация группировки в системе и в AI-промпте</td>
+          </tr>
+          <tr>
+            <td><strong>Документ улучшений</strong></td>
+            <td>Содержательная часть: что услышали, что приоритетно</td>
+            <td>Структура документа, удобство работы с данными, выгрузки</td>
+          </tr>
+          <tr>
+            <td><strong>Обратная связь по UX</strong></td>
+            <td>«Это неудобно, переделай», «Этого не хватает»</td>
+            <td>Готовность переделывать и улучшать на ходу</td>
+          </tr>
+          <tr>
+            <td><strong>Презентация Совету</strong></td>
+            <td>Содержание и нарратив — <strong>готовится совместно</strong></td>
+            <td>Технический показ системы — на Марине</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="h3">Как договариваться, когда мнения расходятся</h3>
+
+    <p>Это, возможно, самое важное во всём документе. У вас обязательно будут моменты, когда вы видите по-разному.</p>
+
+    <ul>
+      <li><strong>Сначала — друг с другом, не через меня.</strong> Если есть спор — обсуждаете напрямую. Не идёте ко мне в роли арбитра.</li>
+      <li><strong>Если не получается договориться за один разговор</strong> — выносите на общую встречу. Я задаю вопросы, помогаю разобраться, но решение остаётся за вами.</li>
+      <li><strong>Если разногласие принципиальное</strong> — да, я могу принять решение. Но это последний шаг, не первый.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Это не «учиться договариваться ради опыта».</strong> Это нормальная работа взрослых людей. В любой команде есть разногласия. Способность решать их без эскалации к начальнику — один из самых ценных профессиональных навыков.
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-num">03.3 · Принципы совместной работы</div>
+    <h2 class="section-title">Что у нас как у команды</h2>
+
+    <ul>
+      <li><strong>Прозрачность важнее лояльности.</strong> Если что-то пошло не так — лучше сказать сразу.</li>
+      <li><strong>Никаких «но мы так договорились».</strong> Если что-то перестало работать или нашёлся лучший путь — меняем. План — это гипотеза, не закон.</li>
+      <li><strong>Конструктивная критика — норма.</strong> «Это не работает, потому что...» — нормальная фраза в обе стороны. И ко мне тоже.</li>
+      <li><strong>Я могу ошибаться.</strong> Я не идеальный руководитель. Я тоже учусь — учусь не вмешиваться, не решать за вас, отпускать. Если я слишком навязчив — скажите.</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <div class="section-num">03.4 · В конце проекта</div>
+    <h2 class="section-title">Ретроспектива — обязательно</h2>
+
+    <p>После завершения пилота — встреча втроём на 1 час. Онлайн.</p>
+
+    <p>Обсуждаем:</p>
+    <ul>
+      <li>Что мы поняли про логистику и компанию</li>
+      <li>Что мы поняли про себя и друг про друга</li>
+      <li>Что бы мы сделали иначе</li>
+      <li>Готовы ли мы взять следующий проект — какой</li>
+      <li>Что в моих действиях помогало, а что мешало</li>
+    </ul>
+
+    <p>Последний пункт — самый важный. И самый мне неприятный. Я обещаю принять то, что вы скажете, и не оправдываться. Это часть моей работы — учиться отпускать. Вы мне в этом поможете.</p>
+  </section>
+
+  <footer>
+    <p class="quote">«Мы делаем не опрос. Мы строим команду через опрос. Опрос — материал, а реальный результат — мы сами через несколько месяцев.»</p>
+    <p class="signature">Проект «Голос внутреннего клиента» · Команда логистики · Марина</p>
+  </footer>
+</div>
+
+<script>
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+  document.querySelector(`.page[data-page="${tab}"]`).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>

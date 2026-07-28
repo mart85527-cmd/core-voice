@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>План проекта — Марина ведёт все интервью</title>
+<style>
+body { font-family: Arial, sans-serif; max-width: 950px; margin: 30px auto; line-height: 1.6; color: #222; }
+h1 { font-size: 24px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+h2 { font-size: 20px; margin-top: 30px; border-bottom: 1px solid #ccc; padding-bottom: 6px; }
+.meta { background: #f5f5f5; padding: 12px; border-left: 4px solid #666; margin: 15px 0; }
+.stage { margin: 20px 0; padding: 15px; border-left: 5px solid; }
+.stage.prep { border-color: #2196f3; background: #e3f2fd; }
+.stage.launch { border-color: #4caf50; background: #e8f5e9; }
+.stage.interviews { border-color: #ff9800; background: #fff3e0; }
+.stage.analysis { border-color: #9c27b0; background: #f3e5f5; }
+.stage.final { border-color: #e91e63; background: #fce4ec; }
+.stage h3 { margin-top: 0; color: #333; }
+.task { margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.6); border-radius: 4px; }
+.task strong { color: #1a237e; }
+.status-done { color: #2e7d32; font-weight: bold; }
+.status-todo { color: #c62828; font-weight: bold; }
+.rules { background: #e8f5e9; padding: 12px; border-left: 4px solid #4caf50; margin: 15px 0; }
+.risks { background: #ffebee; padding: 12px; border-left: 4px solid #f44336; margin: 15px 0; }
+ul { margin-top: 6px; }
+li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<h1>План проекта "Голос внутреннего клиента"</h1>
+<p><strong>Вариант:</strong> Марина ведёт все интервью сама</p>
+
+<div class="meta">
+Марина проводит все 46 интервью сама. Темп: 2–3 интервью в неделю. Запись в Zoom.
+</div>
+
+<h2>Параметры</h2>
+<ul>
+<li><strong>Количество респондентов:</strong> 46</li>
+<li><strong>Интервьюер:</strong> Марина</li>
+<li><strong>Темп:</strong> 2–3 интервью в неделю</li>
+<li><strong>Длительность этапа интервью:</strong> ориентировочно 19 недель</li>
+<li><strong>Инструмент записи:</strong> Zoom</li>
+<li><strong>Расшифровка:</strong> Локальный Whisper</li>
+<li><strong>Извлечение Атомов:</strong> Claude по промпту</li>
+</ul>
+
+<h2>Предполагаемые даты</h2>
+<ul>
+<li>Старт интервью: 22 июня 2026</li>
+<li>Завершение интервью: конец октября 2026</li>
+<li>Завершение проекта (документ + презентация): начало декабря 2026</li>
+</ul>
+
+<h2>Этапы</h2>
+
+<div class="stage prep">
+<h3>Этап 1. Подготовка (15–22 июня)</h3>
+<div class="task"><strong>Сформировать список контактов</strong> — <span class="status-done">завершено</span> — project_contacts.csv</div>
+<div class="task"><strong>Настроить реестры и шаблоны</strong> — <span class="status-done">завершено</span> — interviews.csv, atoms.csv</div>
+<div class="task"><strong>Установить Whisper</strong> — <span class="status-done">завершено</span> — transcribe.bat, transcribe_one.bat</div>
+<div class="task"><strong>Подготовить промпт</strong> — <span class="status-done">завершено</span> — extract_atoms_prompt.txt</div>
+<div class="task"><strong>Подготовить инструкцию для Марины</strong> — <span class="status-done">завершено</span> — interview_guide_for_marina.md/docx</div>
+<div class="task"><strong>Провести тренировочное интервью</strong> — <span class="status-done">завершено</span> — atoms_demo_marina</div>
+</div>
+
+<div class="stage launch">
+<h3>Этап 2. Запуск (22–29 июня)</h3>
+<div class="task"><strong>Марина проводит первое реальное интервью</strong> — <span class="status-todo">не начато</span> — аудио + заметки</div>
+<div class="task"><strong>Расшифровать первое интервью</strong> — <span class="status-todo">не начато</span> — транскрипт .txt</div>
+<div class="task"><strong>Извлечь Атомы из первого интервью</strong> — <span class="status-todo">не начато</span> — atoms.csv пополнен</div>
+</div>
+
+<div class="stage interviews">
+<h3>Этап 3. Набор интервью (29 июня – 30 октября)</h3>
+<div class="task"><strong>Марина проводит 2–3 интервью в неделю</strong> — <span class="status-todo">не начато</span> — 46 интервью</div>
+<div class="task"><strong>Расшифровка и первичная обработка записей</strong> — <span class="status-todo">не начато</span> — транскрипты и заметки</div>
+<div class="task"><strong>Извлечение Атомов из всех интервью</strong> — <span class="status-todo">не начато</span> — полный реестр Атомов</div>
+</div>
+
+<div class="stage analysis">
+<h3>Этап 4. Анализ (2–20 ноября)</h3>
+<div class="task"><strong>Сгруппировать Атомы по роли / команде / JTBD</strong> — <span class="status-todo">не начато</span> — группировка и приоритизация</div>
+<div class="task"><strong>Выделить ключевые проблемы и гипотезы улучшений</strong> — <span class="status-todo">не начато</span> — список улучшений с владельцами</div>
+</div>
+
+<div class="stage final">
+<h3>Этап 5. Документация и презентация (16 ноября – 4 декабря)</h3>
+<div class="task"><strong>Подготовить документ с улучшениями</strong> — <span class="status-todo">не начато</span> — improvements_document.docx/pdf</div>
+<div class="task"><strong>Подготовить презентацию для руководства</strong> — <span class="status-todo">не начато</span> — presentation.pptx/pdf</div>
+<div class="task"><strong>Согласовать итоговые материалы</strong> — <span class="status-todo">не начато</span> — согласованная версия</div>
+<div class="task"><strong>Презентовать результаты руководству</strong> — <span class="status-todo">не начато</span> — проведённая презентация</div>
+</div>
+
+<div class="rules">
+<h2>Важные правила для Марины</h2>
+<ul>
+<li>Не оправдывай процессы — выслушай до конца.</li>
+<li>Не обещай сразу исправить — собирай информацию.</li>
+<li>Переводи с личностей на процессы.</li>
+<li>Не подсказывай ответы — задавай открытые вопросы.</li>
+<li>Фиксируй цитаты, частоту и контекст.</li>
+<li>Сразу после интервью записывай впечатления.</li>
+<li>Обрабатывай аудио не позже чем через 1–2 дня.</li>
+</ul>
+</div>
+
+<div class="risks">
+<h2>Риски</h2>
+<ul>
+<li>Высокая нагрузка на Марину. Решение: не гнать темп выше 3 интервью в неделю.</li>
+<li>Предвзятость из-за роли в логистике. Решение: осознанно держать нейтральную позицию.</li>
+<li>Усталость к середине проекта. Решение: делать перерывы, не проводить интервью в пятницу вечером.</li>
+<li>Технические сбои Zoom или Whisper. Решение: всегда иметь запасной вариант записи.</li>
+</ul>
+</div>
+
+<p><em>Подготовлено: 16.06.2026</em></p>
+
+</body>
+</html>
