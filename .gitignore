@@ -1,0 +1,11 @@
+# Личные данные — не публиковать
+data/
+audio/
+transcripts/
+packages/
+scripts/
+.claude/
+
+# Системные файлы
+Thumbs.db
+Desktop.ini
