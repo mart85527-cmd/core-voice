@@ -5,6 +5,8 @@ transcripts/
 packages/
 scripts/
 .claude/
+meeting-kit/
+meeting-kit.zip
 
 # Системные файлы
 Thumbs.db
