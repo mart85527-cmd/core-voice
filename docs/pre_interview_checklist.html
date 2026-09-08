@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Чек-лист перед интервью</title>
+<style>
+body { font-family: Arial, sans-serif; max-width: 900px; margin: 20px auto; line-height: 1.5; color: #222; padding: 0 16px; }
+h1 { font-size: 22px; border-bottom: 2px solid #333; padding-bottom: 8px; }
+h2 { font-size: 15px; margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 1px; color: #555; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.card { border-radius: 8px; padding: 12px 14px; font-size: 14px; }
+.card h3 { margin: 0 0 8px; font-size: 15px; }
+.before { background: #e8f5e9; border-left: 4px solid #4caf50; }
+.before h3 { color: #2e7d32; }
+.tech { background: #e3f2fd; border-left: 4px solid #2196f3; }
+.tech h3 { color: #1565c0; }
+.during { background: #fff3e0; border-left: 4px solid #ff9800; }
+.during h3 { color: #e65100; }
+.after { background: #f3e5f5; border-left: 4px solid #9c27b0; }
+.after h3 { color: #6a1b9a; }
+ul { margin: 6px 0; padding-left: 4px; list-style: none; }
+li { margin-bottom: 7px; padding-left: 26px; text-indent: -26px; }
+li::before { content: "\2610\00a0\00a0"; font-size: 16px; }
+.anchor { background: #222; color: #fff; border-radius: 8px; padding: 14px; text-align: center; font-size: 16px; margin: 14px 0; }
+.anchor small { display: block; color: #aaa; font-size: 12px; margin-bottom: 6px; }
+.small { font-size: 12px; color: #666; }
+@media print { body { max-width: none; font-size: 13px; } .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<h1>Чек-лист перед интервью</h1>
+<p><em>Отмечай галочками перед каждым созвоном. Печатный лист — держать рядом с карточкой интервьюера.</em></p>
+
+<div class="anchor">
+<small>ЯКОРЬ</small>
+«Моя задача — задать вопросы и услышать ответы. Всё.»
+</div>
+
+<div class="grid">
+
+<div class="card before">
+<h3>Накануне (10–15 минут)</h3>
+<ul>
+<li>Строка респондента в data/project_contacts.csv: маршрут, отдел, заметки</li>
+<li>Если в заметках «гипотеза: ...» — вопрос про частоту пересечения (Текст 3)</li>
+<li>Карточка интервьюера открыта (A / склад / Дина)</li>
+<li>Новый маршрут (B/C)? — попросить у Клода карточку заранее</li>
+<li>Приёмы: горячий кейс → «что именно? сколько? почему?»; после монолога → яркая фраза («а что там с пропуском?»)</li>
+<li>Оценка 0–10: молчать или «почему не 10?» — цифру не повторять</li>
+<li>«С кем ещё поговорить?» — называть направления самой: склад, перевозчики, производство</li>
+<li>Запись — новая формулировка: «только для проекта, никому не пересылаю, по итогу вернусь с результатом»</li>
+</ul>
+</div>
+
+<div class="card tech">
+<h3>За 10 минут до созвона (техника)</h3>
+<ul>
+<li>Тестовая запись 30 секунд — проверить, что звук есть (не тишина)</li>
+<li>Пульт записи запущен один раз (если висит старый — сначала закрыть)</li>
+<li>L — встроенный микрофон (Microphone Array), AirPods только как выход</li>
+<li>Если AirPods: заряд и iPhone подальше от Bluetooth</li>
+<li>Телефон: громкая связь рядом с ноутбуком, оба голоса на дорожку L</li>
+<li>Тихое место, телефон в беззвучный</li>
+</ul>
+</div>
+
+<div class="card during">
+<h3>Во время интервью</h3>
+<ul>
+<li>Запись включена заранее, до звонка</li>
+<li>Вступление по карточке, канву не сокращать</li>
+<li>На претензии — не оправдываться, фиксировать</li>
+<li>«Претензий нет» → пауза 3–5 секунд, не заполнять</li>
+<li>Не закрывать вопрос за респондента («правильно?»)</li>
+<li>Не называть длительность, не извиняться заранее</li>
+<li>Если боль уже лечится — не спрашивать, в конце поделиться: «это уже в работе»</li>
+</ul>
+</div>
+
+<div class="card after">
+<h3>Сразу после</h3>
+<ul>
+<li>Запись не удалять, даже если «что-то не так» — чанки в work/&lt;id&gt;/raw/ спасаются</li>
+<li>Наговорить Клоду своим знанием: кто это, что уже в работе, что звучало странно</li>
+<li>Сказать Клоду ID сессии — конвейер: ingest → распознавание → транскрипт → атомы → разбор</li>
+<li>Диктофон-дубль хранить до проверки атомов</li>
+</ul>
+</div>
+
+</div>
+
+<p class="small">Проект «Голос внутреннего клиента» · карточки интервьюера: docs/interviewer_card.html (A), interviewer_card_sklad.html, interviewer_card_dina.html · вопросы-канвы: interview/interview_canvas_4.html</p>
+
+</body>
+</html>

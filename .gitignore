@@ -1,12 +1,13 @@
 # Личные данные — не публиковать
 data/
-audio/
-transcripts/
 packages/
 scripts/
 .claude/
 meeting-kit/
 meeting-kit.zip
+
+# Итоги для Артёма (имена респондентов и цитаты — только локально)
+docs/2026-09-08-*
 
 # Системные файлы
 Thumbs.db
